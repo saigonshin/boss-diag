@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>裏ボス診断 | THE ABYSS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Noto+Sans+JP:wght@300;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --card-bg: #121212;
+            --accent-a: #4cc9f0; /* 静かなる：青 */
+            --accent-b: #f72585; /* クセ強：ピンク/紫 */
+            --accent-c: #ffbe0b; /* 人たらし：ゴールド */
+            --accent-d: #7209b7; /* 黒幕：濃紫 */
+            --text: #e0e0e0;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Noto Sans JP', sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; overflow-x: hidden;
+        }
+
+        #app { width: 100%; max-width: 450px; padding: 25px; box-sizing: border-box; }
+
+        /* フェード演出 */
+        .fade-in { animation: fadeIn 0.6s forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ヘッダー・タイトル */
+        h1 { font-family: 'Cinzel', serif; font-size: 1.8rem; color: #fff; text-align: center; letter-spacing: 3px; margin-bottom: 5px; }
+        .sub-title { font-size: 0.8rem; text-align: center; color: #888; margin-bottom: 30px; }
+
+        /* 進行状況 */
+        .progress-container { width: 100%; height: 2px; background: #222; margin-bottom: 40px; }
+        .progress-bar { height: 100%; background: #fff; width: 0%; transition: 0.4s; box-shadow: 0 0 10px #fff; }
+
+        /* 質問カード */
+        .question-text { font-size: 1.1rem; font-weight: 700; margin-bottom: 30px; line-height: 1.6; min-height: 3em; }
+        .option-btn {
+            display: block; width: 100%; padding: 18px; margin-bottom: 12px;
+            background: var(--card-bg); border: 1px solid #333; color: var(--text);
+            border-radius: 8px; font-size: 0.95rem; text-align: left; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-btn:active { background: #222; transform: scale(0.98); border-color: #666; }
+
+        /* 結果画面（スクショ用カード） */
+        .result-card {
+            background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+            border: 1px solid #333; border-radius: 15px; padding: 30px 20px;
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .result-card::before {
+            content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+        }
+        .res-label { font-size: 0.75rem; color: #aaa; letter-spacing: 2px; margin-bottom: 10px; }
+        .res-type { font-size: 1.6rem; font-weight: bold; margin-bottom: 20px; color: #fff; }
+        .res-catch { font-size: 1.1rem; color: var(--accent-a); font-weight: bold; margin-bottom: 25px; padding: 10px; border-top: 1px solid #333; border-bottom: 1px solid #333; }
+        .res-desc { font-size: 0.9rem; line-height: 1.8; text-align: left; color: #bbb; margin-bottom: 20px; }
+        
+        .hidden { display: none; }
+        .btn-retry { background: none; border: 1px solid #555; color: #888; padding: 10px 20px; border-radius: 20px; margin-top: 30px; font-size: 0.8rem; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div id="start-screen" class="fade-in">
+        <h1>THE ABYSS</h1>
+        <p class="sub-title">― あなたの裏ボスな性質 診断 ―</p>
+        <div style="text-align: center; margin-top: 50px;">
+            <p style="font-size: 0.9rem; line-height: 2; color: #bbb;">表では普通。<br>でも物語の最後に名前が出るのは<br>こういう人だったりします。</p>
+            <button class="option-btn" style="text-align: center; margin-top: 40px; border-color: #666;" onclick="start()">診断をはじめる</button>
+        </div>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+        <div class="progress-container"><div id="bar" class="progress-bar"></div></div>
+        <div id="question-box" class="fade-in">
+            <p class="question-text" id="q-text"></p>
+            <div id="options"></div>
+        </div>
+    </div>
+
+    <div id="result-screen" class="hidden fade-in">
+        <div class="result-card" id="res-card">
+            <p class="res-label">😈 裏ボス診断結果</p>
+            <div class="res-type" id="res-type"></div>
+            <div class="res-catch" id="res-catch"></div>
+            <div class="res-desc" id="res-desc"></div>
+            <p style="font-size: 0.7rem; color: #555; margin-top: 20px;">※このタイプにはまだ表に出していない側面があります。</p>
+        </div>
+        <div style="text-align: center;">
+            <button class="btn-retry" onclick="location.reload()">もう一度診断する</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { q: "Q1. グループで何か決める時、あなたは？", opts: [{t:"みんなの意見を静かに聞く", s:"A"}, {t:"面白い案をポンと出す", s:"B"}, {t:"まとめ役になることが多い", s:"C"}, {t:"実は裏で別ルートを考えている", s:"D"}] },
+        { q: "Q2. トラブルが起きたら？", opts: [{t:"表情は変えずに対処する", s:"A"}, {t:"「これネタになるな」と思う", s:"B"}, {t:"周りを安心させる", s:"C"}, {t:"原因と人間関係を即分析", s:"D"}] },
+        { q: "Q3. 褒められた時の本音は？", opts: [{t:"（内心）想定通り", s:"A"}, {t:"（内心）もっと評価されてもいい", s:"B"}, {t:"（内心）みんなのおかげ", s:"C"}, {t:"（内心）まだ本気出してない", s:"D"}] },
+        { q: "Q4. 休日の過ごし方は？", opts: [{t:"1人で考え事・インプット", s:"A"}, {t:"好きなことに没頭", s:"B"}, {t:"人と会う・誰かと話す", s:"C"}, {t:"何かを仕込んでいる", s:"D"}] },
+        { q: "Q5. 物語に出るなら？", opts: [{t:"最後に正体が明かされる人物", s:"A"}, {t:"天才だけど変人", s:"B"}, {t:"王様・リーダー", s:"C"}, {t:"黒幕・参謀", s:"D"}] },
+        { q: "Q6. 自分でも「厄介だな」と思うところは？", opts: [{t:"感情を表に出さない", s:"A"}, {t:"思考が飛びすぎる", s:"B"}, {t:"人を気にしすぎる", s:"C"}, {t:"先を読みすぎる", s:"D"}] },
+        { q: "Q7. 無意識にやってしまうのは？", opts: [{t:"全体を俯瞰してしまう", s:"A"}, {t:"常識を疑ってしまう", s:"B"}, {t:"空気を整えてしまう", s:"C"}, {t:"勝ち筋を探してしまう", s:"D"}] }
+    ];
+
+    const results = {
+        A: { title: "静かなる裏ボス型", catch: "何もしてないようで、全部見てる人", desc: "冷静沈着。感情に流されず全体を俯瞰しています。物語の最後に「実はこの人が全部わかっていた」と明かされる、最も不気味で不可欠な存在です。", color: "#4cc9f0" },
+        B: { title: "クセ強・天才裏ボス型", catch: "変人扱いされがちだが、実は最強", desc: "発想が独特で、周囲からはズレていると思われがち。しかし、その思考は常人を超越しており、一番重要な局面で世界をひっくり返す力を持っています。", color: "#f72585" },
+        C: { title: "人たらし裏ボス型", catch: "気づいたら中心にいる人", desc: "自然と空気を支配し、人に好かれるカリスマ。王やリーダーに見えて、実は裏側からすべてを掌握している、ある意味で最も恐ろしいタイプです。", color: "#ffbe0b" },
+        D: { title: "黒幕・策士裏ボス型", catch: "選ばせてるようで、選ばせてない", desc: "一手先を読み、勝ち筋を作る天才。他人に選択肢を与えているようで、実はすでにあなたの盤面は完成しています。すべては計画通りです。", color: "#7209b7" }
+    };
+
+    let currentQ = 0;
+    let score = {A:0, B:0, C:0, D:0};
+
+    function start() {
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        renderQuestion();
+    }
+
+    function renderQuestion() {
+        const q = questions[currentQ];
+        document.getElementById('q-text').innerText = q.q;
+        const optContainer = document.getElementById('options');
+        optContainer.innerHTML = '';
+        
+        q.opts.forEach(o => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = o.t;
+            btn.onclick = () => select(o.s);
+            optContainer.appendChild(btn);
+        });
+
+        document.getElementById('bar').style.width = ((currentQ / questions.length) * 100) + '%';
+    }
+
+    function select(s) {
+        score[s]++;
+        currentQ++;
+        if(currentQ < questions.length) {
+            renderQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+
+        // 集計
+        const maxScore = Math.max(...Object.values(score));
+        const winners = Object.keys(score).filter(k => score[k] === maxScore);
+        
+        let finalType;
+        if(winners.length > 1) {
+            // 複合型
+            finalType = {
+                title: "複合型裏ボス",
+                catch: "表の本性と、裏の性質のズレ",
+                desc: "あなたは単一タイプではありません。複数の性質が混ざり合い、正体がつかめない「真の裏ボス感」を醸し出しています。",
+                color: "#ffffff"
+            };
+        } else {
+            finalType = results[winners[0]];
+        }
+
+        document.getElementById('res-type').innerText = "【" + finalType.title + "】";
+        document.getElementById('res-catch').innerText = "👉 " + finalType.catch;
+        document.getElementById('res-desc').innerText = finalType.desc;
+        document.getElementById('res-catch').style.color = finalType.color;
+        document.getElementById('res-card').style.borderColor = finalType.color;
+    }
+</script>
+</body>
+</html>
