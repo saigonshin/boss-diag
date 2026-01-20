@@ -28,37 +28,34 @@
         .fade-in { animation: fadeIn 0.6s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        h1 { color: var(--accent-pink); text-align: center; font-size: 1.8rem; margin-bottom: 5px; }
+        h1 { color: var(--accent-pink); text-align: center; font-size: 1.8rem; margin-bottom: 5px; text-shadow: 0 0 10px rgba(255,121,198,0.5); }
         .sub-title { text-align: center; font-size: 0.8rem; color: var(--accent-purple); margin-bottom: 30px; }
 
-        /* 進行バー */
-        .progress-container { width: 100%; height: 6px; background: #222; border-radius: 10px; margin-bottom: 30px; overflow: hidden; }
-        .progress-bar { height: 100%; background: var(--accent-pink); width: 0%; transition: 0.4s; }
+        .progress-container { width: 100%; height: 8px; background: #222; border-radius: 10px; margin-bottom: 30px; overflow: hidden; border: 1px solid #444; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, var(--accent-purple), var(--accent-pink)); width: 0%; transition: 0.4s; }
 
-        /* 質問エリア */
-        .question-text { font-size: 1.1rem; font-weight: 700; margin-bottom: 25px; line-height: 1.6; min-height: 3.5em; text-align: center; }
+        .question-text { font-size: 1.1rem; font-weight: 700; margin-bottom: 25px; line-height: 1.6; min-height: 3.5em; text-align: center; color: #fff; }
 
-        /* ボタンのデザイン */
         .option-btn {
-            display: block; width: 100%; padding: 15px; margin-bottom: 12px;
+            display: block; width: 100%; padding: 16px; margin-bottom: 12px;
             background: #282a36; border: 2px solid #44475a; color: #f8f8f2;
             border-radius: 50px; font-size: 0.95rem; cursor: pointer; transition: 0.2s; text-align: center;
+            box-shadow: 0 4px 0 #111;
         }
-        .option-btn:active { transform: scale(0.95); background: var(--accent-purple); }
+        .option-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #111; background: var(--accent-purple); }
 
-        /* 結果画面 */
         .result-card {
             background: var(--card-bg);
             border: 3px solid var(--accent-purple);
             border-radius: 25px; padding: 0 0 30px 0;
             text-align: center; overflow: hidden;
-            box-shadow: 0 0 20px rgba(189, 147, 249, 0.3);
+            box-shadow: 0 0 30px rgba(189, 147, 249, 0.4);
         }
-        .result-img { width: 100%; height: 250px; object-fit: cover; border-bottom: 3px solid var(--accent-purple); margin-bottom: 20px; }
+        .result-img { width: 100%; height: 300px; object-fit: cover; border-bottom: 3px solid var(--accent-purple); margin-bottom: 20px; }
         .res-content { padding: 0 20px; }
-        .res-type { font-size: 1.6rem; font-weight: bold; margin-bottom: 10px; color: #fff; }
+        .res-type { font-size: 1.6rem; font-weight: bold; margin-bottom: 10px; color: #fff; text-shadow: 0 0 5px var(--accent-purple); }
         .res-catch { font-size: 1rem; color: var(--accent-pink); margin-bottom: 20px; font-weight: bold; }
-        .res-desc { font-size: 0.9rem; line-height: 1.8; text-align: left; color: #ddd; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; }
+        .res-desc { font-size: 0.9rem; line-height: 1.8; text-align: left; color: #ddd; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 15px; border: 1px solid #444; }
         
         .hidden { display: none; }
     </style>
@@ -69,7 +66,10 @@
     <div id="start-screen" class="fade-in">
         <h1>THE ABYSS</h1>
         <p class="sub-title">〜可愛くて最強な裏ボス診断〜</p>
-        <button class="option-btn" style="border-color: var(--accent-pink); margin-top: 50px;" onclick="start()">診断をはじめる！</button>
+        <div style="text-align:center; margin-bottom: 40px;">
+            <span style="font-size: 4rem;">😈</span>
+        </div>
+        <button class="option-btn" style="border-color: var(--accent-pink);" onclick="start()">診断をはじめる！</button>
     </div>
 
     <div id="quiz-screen" class="hidden">
@@ -84,7 +84,7 @@
         <div class="result-card">
             <img src="" id="res-img" class="result-img">
             <div class="res-content">
-                <p style="font-size: 0.7rem; color: var(--accent-purple);">💖 Your Result</p>
+                <p style="font-size: 0.7rem; color: var(--accent-purple); letter-spacing: 2px;">★ CHARACTER UNLOCKED ★</p>
                 <div class="res-type" id="res-type"></div>
                 <div class="res-catch" id="res-catch"></div>
                 <div id="res-desc" class="res-desc"></div>
@@ -106,11 +106,36 @@
     ];
 
     const results = {
-        A: { title: "氷の微笑・観測者", catch: "静かなる支配者", desc: "あなたは、ニコニコしながらすべてを見通すタイプ。争いには参加しませんが、最後にはあなたが一番得をしています。", img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80" },
-        B: { title: "混沌のパペット", catch: "予測不能な天才キャラ", desc: "常識なんて関係ない！あなたの自由すぎる行動が、結果的に世界をひっくり返してしまいます。", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=800&q=80" },
-        C: { title: "光の帝王", catch: "太陽のような支配者", desc: "圧倒的なカリスマ性で人を惹きつけます。あなたの「お願い」は誰も断ることができません。", img: "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?auto=format&fit=crop&w=800&q=80" },
-        D: { title: "毒入りキャンディ", catch: "甘い罠を仕掛ける策士", desc: "可愛く振る舞いながら、相手の弱点を完璧に把握。あなたの手のひらから逃げることは不可能です。", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80" },
-        Mix: { title: "深淵のプリンセス", catch: "すべての性質を持つ完全体", desc: "可愛さ、恐ろしさ、賢さ。すべてを兼ね備えたあなたは、正真正銘の『真の裏ボス』です。", img: "https://images.unsplash.com/photo-1514539079130-25950c84af65?auto=format&fit=crop&w=800&q=80" }
+        A: { 
+            title: "氷の微笑・観測者", 
+            catch: "静かなる支配者", 
+            desc: "あなたは、ニコニコしながらすべてを見通すタイプ。争いには参加しませんが、最後にはあなたが一番得をしています。冷静な瞳の裏で、次の一手を常に計算しています。", 
+            img: "http://googleusercontent.com/image_collection/image_retrieval/12456462325040691428_0" 
+        },
+        B: { 
+            title: "混沌のパペット", 
+            catch: "予測不能な天才キャラ", 
+            desc: "常識なんて関係ない！あなたの自由すぎる行動が、結果的に世界をひっくり返してしまいます。無邪気な笑顔で破壊を楽しむ、最も危険なタイプです。", 
+            img: "http://googleusercontent.com/image_collection/image_retrieval/13229614559657000118_0" 
+        },
+        C: { 
+            title: "光の帝王", 
+            catch: "太陽のような支配者", 
+            desc: "圧倒的なカリスマ性で人を惹きつけます。あなたの「お願い」は誰も断ることができません。光り輝く笑顔の裏に、絶対的な権力を持っています。", 
+            img: "http://googleusercontent.com/image_collection/image_retrieval/8919607878475257886_0" 
+        },
+        D: { 
+            title: "毒入りキャンディ", 
+            catch: "甘い罠を仕掛ける策士", 
+            desc: "可愛く振る舞いながら、相手の弱点を完璧に把握。あなたの手のひらから逃げることは不可能です。甘い香りに誘われたら最後、もう戻れません。", 
+            img: "http://googleusercontent.com/image_collection/image_retrieval/9811439395890983454_0" 
+        },
+        Mix: { 
+            title: "深淵のプリンセス", 
+            catch: "すべての性質を持つ完全体", 
+            desc: "可愛さ、恐ろしさ、賢さ。すべてを兼ね備えたあなたは、正真正銘の『真の裏ボス』です。その深淵な魅力に、世界はひざまずくことでしょう。", 
+            img: "http://googleusercontent.com/image_collection/image_retrieval/14818452973366709505_0" 
+        }
     };
 
     let currentQ = 0;
@@ -157,3 +182,4 @@
 </script>
 </body>
 </html>
+       
