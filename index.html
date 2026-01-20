@@ -28,6 +28,20 @@
         .fade-in { animation: fadeIn 0.6s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        h1 { color: var(--accent-pink); text-align: center; font-size: 1.8rem; margin-bottom: 30px; }
+
+        /* 質問エリア */
+        .question-box { background: var(--card-bg); padding: 30px; border-radius: 25px; border: 2px solid var(--accent-purple); text-align: center; }
+        .question-text { font-size: 1.1rem; font-weight: 700; margin-bottom: 25px; line-height: 1.6; color: #fff; }
+
+        /* ボタンのデザイン */
+        .option-btn {
+            display: block; width: 100%; padding: 15px; margin-bottom: 12px;
+            background: #282a36; border: 2px solid #44475a; color: #f8f8f2;
+            border-radius: 50px; font-size: 1rem; cursor: pointer; transition: 0.3s;
+        }
+        .option-btn:hover { border-color: var(--accent-pink); background: #44475a; }
+
         /* 結果カードのデザイン */
         .result-card {
             background: var(--card-bg);
@@ -37,25 +51,12 @@
             box-shadow: 0 0 20px rgba(189, 147, 249, 0.3);
         }
 
-        .result-img {
-            width: 100%; height: 280px; object-fit: cover;
-            border-bottom: 3px solid var(--accent-purple);
-            margin-bottom: 20px;
-        }
-
+        .result-img { width: 100%; height: 280px; object-fit: cover; border-bottom: 3px solid var(--accent-purple); margin-bottom: 20px; }
         .res-content { padding: 0 20px; }
         .res-label { font-size: 0.8rem; color: var(--accent-pink); font-weight: bold; margin-bottom: 10px; }
         .res-type { font-size: 1.6rem; font-weight: bold; margin-bottom: 10px; color: #fff; }
         .res-catch { font-size: 1rem; color: var(--accent-purple); margin-bottom: 20px; font-weight: bold; }
         .res-desc { font-size: 0.9rem; line-height: 1.8; text-align: left; color: #ddd; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 15px; }
-        
-        /* ボタンのデザイン */
-        .option-btn {
-            display: block; width: 100%; padding: 15px; margin-bottom: 12px;
-            background: #282a36; border: 2px solid #44475a; color: #f8f8f2;
-            border-radius: 50px; font-size: 1rem; cursor: pointer; transition: 0.3s;
-        }
-        .option-btn:hover { border-color: var(--accent-pink); background: #44475a; }
         
         .hidden { display: none; }
     </style>
@@ -63,24 +64,91 @@
 <body>
 
 <div id="app">
-    <div id="result-screen" class="fade-in">
+    <div id="start-screen" class="fade-in">
+        <h1>THE ABYSS</h1>
+        <div class="question-box">
+            <p class="question-text">あなたの「裏の顔」を暴きます。<br>心の準備はいいですか？</p>
+            <button class="option-btn" style="border-color: var(--accent-pink);" onclick="startQuiz()">診断をはじめる</button>
+        </div>
+    </div>
+
+    <div id="quiz-screen" class="hidden fade-in">
+        <div class="question-box">
+            <p id="q-text" class="question-text"></p>
+            <div id="options"></div>
+        </div>
+    </div>
+
+    <div id="result-screen" class="hidden fade-in">
         <div class="result-card">
-            <img src="https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?auto=format&fit=crop&w=800&q=80" class="result-img">
-            
+            <img id="res-img" src="" class="result-img">
             <div class="res-content">
                 <p class="res-label">💖 究極の裏ボス降臨</p>
-                <div class="res-type">【深淵のロリポップ裏ボス】</div>
-                <div class="res-catch">〜可愛さの裏に、絶対の支配〜</div>
-                <div class="res-desc">
-                    見た目は最高にキュート！でも、あなたの正体は世界を裏から作り変える最強の支配者です。
-                    「えへへ、全部ボクの思い通りだよ♪」という笑顔で、強敵を次々と無力化してしまう恐ろしさを持っています。
-                    あなたの「矛盾した魅力」に、周囲はメロメロになりながらも、逆らうことなど微塵も考えられません。
-                </div>
+                <div id="res-type" class="res-type"></div>
+                <div id="res-catch" class="res-catch"></div>
+                <div id="res-desc" class="res-desc"></div>
             </div>
         </div>
         <button class="option-btn" style="margin-top: 25px; border-color: var(--accent-purple);" onclick="location.reload()">もう一度診断する</button>
     </div>
 </div>
 
+<script>
+    const questions = [
+        { q: "魔法が使えるなら？", opts: [{t:"時を止める", s:"A"}, {t:"全てを爆発させる", s:"B"}, {t:"人の心を操る", s:"C"}, {t:"消える", s:"D"}] },
+        { q: "好きな色は？", opts: [{t:"深淵の黒", s:"A"}, {t:"鮮血の赤", s:"B"}, {t:"黄金の輝き", s:"C"}, {t:"猛毒の紫", s:"D"}] },
+        { q: "最後の戦いでのセリフは？", opts: [{t:"「ずっと見てたよ」", s:"A"}, {t:"「あはは！壊しちゃえ！」", s:"B"}, {t:"「ボクに従いなさい」", s:"C"}, {t:"「すべて計画通り」", s:"D"}] }
+    ];
+
+    const results = {
+        A: { type: "氷の微笑・観測者", catch: "静かなる支配者", desc: "ニコニコしながら全てを見通すタイプ。争いには参加せず、最後には一番得をしています。", img: "https://images.unsplash.com/photo-1578632738980-43314a5b4628?w=800&auto=format" },
+        B: { type: "混沌のパペット", catch: "予測不能な天才キャラ", desc: "常識なんて関係ない！自由すぎる行動が、結果的に世界をひっくり返してしまいます。", img: "https://images.unsplash.com/photo-1634157703702-3c124b455499?w=800&auto=format" },
+        C: { type: "深淵のロリポップ", catch: "可愛さの裏に、絶対の支配", desc: "見た目は最高にキュート！でも、あなたの正体は世界を裏から作り変える最強の支配者です。", img: "https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?w=800&auto=format" },
+        D: { type: "毒入りキャンディ", catch: "甘い罠を仕掛ける策士", desc: "可愛く振る舞いながら相手の弱点を完璧に把握。あなたの手のひらから逃げることは不可能です。", img: "https://images.unsplash.com/photo-1560972550-aba3456b5564?w=800&auto=format" }
+    };
+
+    let currentQ = 0;
+    let scores = {A:0, B:0, C:0, D:0};
+
+    function startQuiz() {
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        showQuestion();
+    }
+
+    function showQuestion() {
+        const q = questions[currentQ];
+        document.getElementById('q-text').innerText = q.q;
+        const optDiv = document.getElementById('options');
+        optDiv.innerHTML = '';
+        q.opts.forEach(o => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = o.t;
+            btn.onclick = () => { scores[o.s]++; next(); };
+            optDiv.appendChild(btn);
+        });
+    }
+
+    function next() {
+        currentQ++;
+        if(currentQ < questions.length) {
+            showQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+        const winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+        const res = results[winner];
+        document.getElementById('res-type').innerText = "【" + res.type + "】";
+        document.getElementById('res-catch').innerText = "〜" + res.catch + "〜";
+        document.getElementById('res-desc').innerText = res.desc;
+        document.getElementById('res-img').src = res.img;
+    }
+</script>
 </body>
 </html>
