@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>裏ボス診断 | THE ABYSS</title>
+    <title>裏ボス診断 | THE ABYSS CUTIE</title>
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700&family=Noto+Sans+JP:wght@300;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -18,9 +18,9 @@
             margin: 0; padding: 0;
             background-color: var(--bg);
             color: var(--text);
-            font-family: 'Noto Sans JP', sans-serif;
+            font-family: 'Noto Sans JP', 'M PLUS Rounded 1c', sans-serif;
             display: flex; justify-content: center; align-items: center;
-            min-height: 100vh;
+            min-height: 100vh; overflow-x: hidden;
         }
 
         #app { width: 100%; max-width: 450px; padding: 20px; box-sizing: border-box; }
@@ -28,8 +28,13 @@
         .fade-in { animation: fadeIn 0.6s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        h1 { color: var(--accent-pink); text-align: center; font-size: 1.8rem; text-shadow: 0 0 10px rgba(255,121,198,0.5); margin-bottom: 5px; }
+        h1 { color: var(--accent-pink); text-align: center; font-size: 1.8rem; margin-bottom: 5px; text-shadow: 0 0 10px rgba(255,121,198,0.5); }
         .sub-title { text-align: center; font-size: 0.8rem; color: var(--accent-purple); margin-bottom: 30px; }
+
+        .progress-container { width: 100%; height: 8px; background: #222; border-radius: 10px; margin-bottom: 30px; overflow: hidden; border: 1px solid #444; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, var(--accent-purple), var(--accent-pink)); width: 0%; transition: 0.4s; }
+
+        .question-text { font-size: 1.1rem; font-weight: 700; margin-bottom: 25px; line-height: 1.6; min-height: 3.5em; text-align: center; color: #fff; }
 
         .option-btn {
             display: block; width: 100%; padding: 16px; margin-bottom: 12px;
@@ -37,23 +42,19 @@
             border-radius: 50px; font-size: 0.95rem; cursor: pointer; transition: 0.2s; text-align: center;
             box-shadow: 0 4px 0 #111;
         }
-        .option-btn:active { background: var(--accent-purple); transform: translateY(2px); box-shadow: 0 2px 0 #111; }
+        .option-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #111; background: var(--accent-purple); }
 
         .result-card {
             background: var(--card-bg);
             border: 3px solid var(--accent-purple);
-            border-radius: 25px; padding: 0 0 25px 0;
+            border-radius: 25px; padding: 0 0 30px 0;
             text-align: center; overflow: hidden;
             box-shadow: 0 0 30px rgba(189, 147, 249, 0.4);
         }
-        .result-img { 
-            width: 100%; 
-            height: 380px; 
-            object-fit: cover; 
-            border-bottom: 3px solid var(--accent-purple);
-        }
+        .result-img { width: 100%; height: 300px; object-fit: cover; border-bottom: 3px solid var(--accent-purple); margin-bottom: 20px; }
         .res-content { padding: 0 20px; }
-        .res-type { font-size: 1.6rem; font-weight: bold; margin: 15px 0 5px 0; color: #fff; text-shadow: 0 0 5px var(--accent-purple); }
+        .res-type { font-size: 1.6rem; font-weight: bold; margin-bottom: 10px; color: #fff; text-shadow: 0 0 5px var(--accent-purple); }
+        .res-catch { font-size: 1rem; color: var(--accent-pink); margin-bottom: 20px; font-weight: bold; }
         .res-desc { font-size: 0.9rem; line-height: 1.8; text-align: left; color: #ddd; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 15px; border: 1px solid #444; }
         
         .hidden { display: none; }
@@ -65,24 +66,31 @@
     <div id="start-screen" class="fade-in">
         <h1>THE ABYSS</h1>
         <p class="sub-title">〜可愛くて最強な裏ボス診断〜</p>
-        <div style="text-align:center; margin-bottom: 40px; font-size: 4rem;">🔮</div>
-        <button class="option-btn" style="border-color: var(--accent-pink);" onclick="start()">深淵をのぞく</button>
+        <div style="text-align:center; margin-bottom: 40px;">
+            <span style="font-size: 4rem;">😈</span>
+        </div>
+        <button class="option-btn" style="border-color: var(--accent-pink);" onclick="start()">診断をはじめる！</button>
     </div>
 
     <div id="quiz-screen" class="hidden">
-        <p id="q-text" style="font-size: 1.1rem; font-weight: bold; text-align: center; margin-bottom: 30px; min-height: 3em;"></p>
-        <div id="options"></div>
+        <div class="progress-container"><div id="bar" class="progress-bar"></div></div>
+        <div id="question-box" class="fade-in">
+            <p class="question-text" id="q-text"></p>
+            <div id="options"></div>
+        </div>
     </div>
 
     <div id="result-screen" class="hidden fade-in">
         <div class="result-card">
             <img src="" id="res-img" class="result-img">
             <div class="res-content">
+                <p style="font-size: 0.7rem; color: var(--accent-purple); letter-spacing: 2px;">★ CHARACTER UNLOCKED ★</p>
                 <div class="res-type" id="res-type"></div>
+                <div class="res-catch" id="res-catch"></div>
                 <div id="res-desc" class="res-desc"></div>
             </div>
         </div>
-        <button class="option-btn" style="margin-top: 25px; border-color: var(--accent-purple);" onclick="location.reload()">転生する（最初から）</button>
+        <button class="option-btn" style="margin-top: 25px; border-color: var(--accent-purple);" onclick="location.reload()">もう一度あそぶ</button>
     </div>
 </div>
 
@@ -90,36 +98,43 @@
     const questions = [
         { q: "Q1. 友達との集まり、あなたの立ち位置は？", opts: [{t:"ニコニコ聞き役", s:"A"}, {t:"自由すぎるムードメーカー", s:"B"}, {t:"みんなをまとめるリーダー", s:"C"}, {t:"実は裏で予定を操っている", s:"D"}] },
         { q: "Q2. 怒った時はどうなる？", opts: [{t:"静かに、でも目が笑ってない", s:"A"}, {t:"派手に怒ってすぐ忘れる", s:"B"}, {t:"論理的に追い詰める", s:"C"}, {t:"笑顔で復讐の準備をする", s:"D"}] },
-        { q: "Q3. 魔法が使えるなら？", opts: [{t:"時を止めて観察したい", s:"A"}, {t:"派手な爆発魔法！", s:"B"}, {t:"全員を従える支配魔法", s:"C"}, {t:"誰かの記憶を書き換える", s:"D"}] },
-        { q: "Q4. 最後の戦い、あなたのセリフは？", opts: [{t:"「ずっと見てたよ」", s:"A"}, {t:"「あはは！壊しちゃえ！」", s:"B"}, {t:"「ボクに従いなさい」", s:"C"}, {t:"「すべて計画通りだよ」", s:"D"}] }
+        { q: "Q3. 好きな食べ物はどっち？", opts: [{t:"甘くて可愛いお菓子", s:"A"}, {t:"刺激たっぷり激辛料理", s:"B"}, {t:"みんなで食べる豪華なもの", s:"C"}, {t:"毒が入ってそうな色の飲み物", s:"D"}] },
+        { q: "Q4. 魔法が使えるなら？", opts: [{t:"時を止めて観察したい", s:"A"}, {t:"派手な爆発魔法！", s:"B"}, {t:"全員を従える支配魔法", s:"C"}, {t:"誰かの記憶を書き換える", s:"D"}] },
+        { q: "Q5. 自分の性格をひとことで言うと？", opts: [{t:"おっとり、でも鋭い", s:"A"}, {t:"天才、でも変人", s:"B"}, {t:"頼れる、でも怖い", s:"C"}, {t:"親切、でも計算高い", s:"D"}] },
+        { q: "Q6. 敵に回したくないのは？", opts: [{t:"正体がわからない人", s:"A"}, {t:"何をするか読めない人", s:"B"}, {t:"人望がすごすぎる人", s:"C"}, {t:"弱みを握っている人", s:"D"}] },
+        { q: "Q7. 最後の戦い、あなたのセリフは？", opts: [{t:"「ずっと見てたよ」", s:"A"}, {t:"「あはは！壊しちゃえ！」", s:"B"}, {t:"「ボクに従いなさい」", s:"C"}, {t:"「すべて計画通りだよ」", s:"D"}] }
     ];
 
-    // より安定した画像ソースに差し替え
     const results = {
         A: { 
-            title: "【氷の微笑・観測者】", 
-            desc: "あなたは静かに戦況を見守り、最後にすべてをかっさらうタイプ。冷静な瞳の裏で、終わりのシナリオを書き換えています。", 
-            img: "https://cdn.pixabay.com/photo/2023/10/24/01/21/anime-8337190_1280.jpg" 
+            title: "氷の微笑・観測者", 
+            catch: "静かなる支配者", 
+            desc: "あなたは、ニコニコしながらすべてを見通すタイプ。争いには参加しませんが、最後にはあなたが一番得をしています。冷静な瞳の裏で、次の一手を常に計算しています。", 
+            img: "https://images.unsplash.com/photo-1578632738980-43314a5b4628?q=80&w=800&auto=format&fit=crop" 
         },
         B: { 
-            title: "【混沌のパペット】", 
-            desc: "常識なんて関係ない！圧倒的な好奇心と無邪気な狂気で、世界を遊び場に変えてしまう最強のトラブルメーカーです。", 
-            img: "https://cdn.pixabay.com/photo/2023/04/10/16/09/anime-girl-7914107_1280.jpg" 
+            title: "混沌のパペット", 
+            catch: "予測不能な天才キャラ", 
+            desc: "常識なんて関係ない！あなたの自由すぎる行動が、結果的に世界をひっくり返してしまいます。無邪気な笑顔で破壊を楽しむ、最も危険なタイプです。", 
+            img: "https://images.unsplash.com/photo-1634157703702-3c124b455499?q=80&w=800&auto=format&fit=crop" 
         },
         C: { 
-            title: "【光の帝王】", 
-            desc: "圧倒的なカリスマで、ひざまずかせる。あなたの言葉は絶対であり、その輝きは敵さえも魅了してしまいます。", 
-            img: "https://cdn.pixabay.com/photo/2023/10/24/01/24/ai-generated-8337194_1280.jpg" 
+            title: "光の帝王", 
+            catch: "太陽のような支配者", 
+            desc: "圧倒的なカリスマ性で人を惹きつけます。あなたの「お願い」は誰も断ることができません。光り輝く笑顔の裏に、絶対的な権力を持っています。", 
+            img: "https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?q=80&w=800&auto=format&fit=crop" 
         },
         D: { 
-            title: "【毒入りキャンディ】", 
-            desc: "可愛く笑いながら、相手の喉元にナイフを突き立てる策士。あなたの甘い罠から逃げ出すことは不可能です。", 
-            img: "https://cdn.pixabay.com/photo/2023/04/11/13/27/anime-girl-7917208_1280.jpg" 
+            title: "毒入りキャンディ", 
+            catch: "甘い罠を仕掛ける策士", 
+            desc: "可愛く振る舞いながら、相手の弱点を完璧に把握。あなたの手のひらから逃げることは不可能です。甘い香りに誘われたら最後、もう戻れません。", 
+            img: "https://images.unsplash.com/photo-1560972550-aba3456b5564?q=80&w=800&auto=format&fit=crop" 
         },
         Mix: { 
-            title: "【深淵のプリンセス】", 
-            desc: "すべての性質を兼ね備えた、完全なる裏ボス。あなたの前では、勇者も魔王もただの観客にすぎません。", 
-            img: "https://cdn.pixabay.com/photo/2023/10/24/01/22/ai-generated-8337192_1280.jpg" 
+            title: "深淵のプリンセス", 
+            catch: "すべての性質を持つ完全体", 
+            desc: "可愛さ、恐ろしさ、賢さ。すべてを兼ね備えたあなたは、正真正銘の『真の裏ボス』です。その深淵な魅力に、世界はひざまずくことでしょう。", 
+            img: "https://images.unsplash.com/photo-1618336753974-aae8e04506aa?q=80&w=800&auto=format&fit=crop" 
         }
     };
 
@@ -129,10 +144,10 @@
     function start() {
         document.getElementById('start-screen').classList.add('hidden');
         document.getElementById('quiz-screen').classList.remove('hidden');
-        render();
+        renderQuestion();
     }
 
-    function render() {
+    function renderQuestion() {
         const q = questions[currentQ];
         document.getElementById('q-text').innerText = q.q;
         const optContainer = document.getElementById('options');
@@ -144,12 +159,13 @@
             btn.onclick = () => { score[o.s]++; next(); };
             optContainer.appendChild(btn);
         });
+        document.getElementById('bar').style.width = ((currentQ / questions.length) * 100) + '%';
     }
 
     function next() {
         currentQ++;
-        if(currentQ < questions.length) render();
-        else showResult();
+        if(currentQ < questions.length) { renderQuestion(); } 
+        else { showResult(); }
     }
 
     function showResult() {
@@ -158,7 +174,8 @@
         const maxScore = Math.max(...Object.values(score));
         const winners = Object.keys(score).filter(k => score[k] === maxScore);
         let res = winners.length > 1 ? results.Mix : results[winners[0]];
-        document.getElementById('res-type').innerText = res.title;
+        document.getElementById('res-type').innerText = "【" + res.title + "】";
+        document.getElementById('res-catch').innerText = res.catch;
         document.getElementById('res-desc').innerText = res.desc;
         document.getElementById('res-img').src = res.img;
     }
