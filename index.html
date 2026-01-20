@@ -28,14 +28,16 @@
         .fade-in { animation: fadeIn 0.6s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        h1 { color: var(--accent-pink); text-align: center; font-size: 1.8rem; text-shadow: 0 0 10px rgba(255,121,198,0.5); }
+        h1 { color: var(--accent-pink); text-align: center; font-size: 1.8rem; text-shadow: 0 0 10px rgba(255,121,198,0.5); margin-bottom: 5px; }
+        .sub-title { text-align: center; font-size: 0.8rem; color: var(--accent-purple); margin-bottom: 30px; }
 
         .option-btn {
             display: block; width: 100%; padding: 16px; margin-bottom: 12px;
             background: #282a36; border: 2px solid #44475a; color: #f8f8f2;
             border-radius: 50px; font-size: 0.95rem; cursor: pointer; transition: 0.2s; text-align: center;
+            box-shadow: 0 4px 0 #111;
         }
-        .option-btn:active { background: var(--accent-purple); transform: scale(0.98); }
+        .option-btn:active { background: var(--accent-purple); transform: translateY(2px); box-shadow: 0 2px 0 #111; }
 
         .result-card {
             background: var(--card-bg);
@@ -44,17 +46,15 @@
             text-align: center; overflow: hidden;
             box-shadow: 0 0 30px rgba(189, 147, 249, 0.4);
         }
-        /* 画像を枠内に綺麗に収める設定 */
         .result-img { 
             width: 100%; 
-            height: 350px; 
+            height: 380px; 
             object-fit: cover; 
             border-bottom: 3px solid var(--accent-purple);
-            background-color: #000;
         }
         .res-content { padding: 0 20px; }
-        .res-type { font-size: 1.6rem; font-weight: bold; margin: 15px 0 5px 0; color: #fff; }
-        .res-desc { font-size: 0.9rem; line-height: 1.8; text-align: left; color: #ddd; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 15px; }
+        .res-type { font-size: 1.6rem; font-weight: bold; margin: 15px 0 5px 0; color: #fff; text-shadow: 0 0 5px var(--accent-purple); }
+        .res-desc { font-size: 0.9rem; line-height: 1.8; text-align: left; color: #ddd; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 15px; border: 1px solid #444; }
         
         .hidden { display: none; }
     </style>
@@ -64,8 +64,9 @@
 <div id="app">
     <div id="start-screen" class="fade-in">
         <h1>THE ABYSS</h1>
-        <p style="text-align: center; color: var(--accent-purple);">〜可愛くて最強な裏ボス診断〜</p>
-        <button class="option-btn" style="margin-top: 40px; border-color: var(--accent-pink);" onclick="start()">診断を開始する</button>
+        <p class="sub-title">〜可愛くて最強な裏ボス診断〜</p>
+        <div style="text-align:center; margin-bottom: 40px; font-size: 4rem;">🔮</div>
+        <button class="option-btn" style="border-color: var(--accent-pink);" onclick="start()">深淵をのぞく</button>
     </div>
 
     <div id="quiz-screen" class="hidden">
@@ -81,7 +82,7 @@
                 <div id="res-desc" class="res-desc"></div>
             </div>
         </div>
-        <button class="option-btn" style="margin-top: 25px; border-color: var(--accent-purple);" onclick="location.reload()">もう一度診断する</button>
+        <button class="option-btn" style="margin-top: 25px; border-color: var(--accent-purple);" onclick="location.reload()">転生する（最初から）</button>
     </div>
 </div>
 
@@ -93,32 +94,32 @@
         { q: "Q4. 最後の戦い、あなたのセリフは？", opts: [{t:"「ずっと見てたよ」", s:"A"}, {t:"「あはは！壊しちゃえ！」", s:"B"}, {t:"「ボクに従いなさい」", s:"C"}, {t:"「すべて計画通りだよ」", s:"D"}] }
     ];
 
-    // 各タイプに合わせた「裏ボス」画像
+    // より安定した画像ソースに差し替え
     const results = {
         A: { 
             title: "【氷の微笑・観測者】", 
             desc: "あなたは静かに戦況を見守り、最後にすべてをかっさらうタイプ。冷静な瞳の裏で、終わりのシナリオを書き換えています。", 
-            img: "https://images.unsplash.com/photo-1618336753974-aae8e04506aa?q=80&w=800&auto=format&fit=crop" 
+            img: "https://cdn.pixabay.com/photo/2023/10/24/01/21/anime-8337190_1280.jpg" 
         },
         B: { 
             title: "【混沌のパペット】", 
             desc: "常識なんて関係ない！圧倒的な好奇心と無邪気な狂気で、世界を遊び場に変えてしまう最強のトラブルメーカーです。", 
-            img: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=800&auto=format&fit=crop" 
+            img: "https://cdn.pixabay.com/photo/2023/04/10/16/09/anime-girl-7914107_1280.jpg" 
         },
         C: { 
             title: "【光の帝王】", 
             desc: "圧倒的なカリスマで、ひざまずかせる。あなたの言葉は絶対であり、その輝きは敵さえも魅了してしまいます。", 
-            img: "https://images.unsplash.com/photo-1541562232579-512a21360020?q=80&w=800&auto=format&fit=crop" 
+            img: "https://cdn.pixabay.com/photo/2023/10/24/01/24/ai-generated-8337194_1280.jpg" 
         },
         D: { 
             title: "【毒入りキャンディ】", 
             desc: "可愛く笑いながら、相手の喉元にナイフを突き立てる策士。あなたの甘い罠から逃げ出すことは不可能です。", 
-            img: "https://images.unsplash.com/photo-1571757767119-68b8dbed8c97?q=80&w=800&auto=format&fit=crop" 
+            img: "https://cdn.pixabay.com/photo/2023/04/11/13/27/anime-girl-7917208_1280.jpg" 
         },
         Mix: { 
             title: "【深淵のプリンセス】", 
             desc: "すべての性質を兼ね備えた、完全なる裏ボス。あなたの前では、勇者も魔王もただの観客にすぎません。", 
-            img: "https://images.unsplash.com/photo-1578632738980-43314a5b4628?q=80&w=800&auto=format&fit=crop" 
+            img: "https://cdn.pixabay.com/photo/2023/10/24/01/22/ai-generated-8337192_1280.jpg" 
         }
     };
 
