@@ -20,7 +20,7 @@
             color: var(--text);
             font-family: 'Noto Sans JP', 'M PLUS Rounded 1c', sans-serif;
             display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; overflow-x: hidden;
+            min-height: 100vh;
         }
 
         #app { width: 100%; max-width: 450px; padding: 20px; box-sizing: border-box; }
@@ -40,9 +40,8 @@
             display: block; width: 100%; padding: 16px; margin-bottom: 12px;
             background: #282a36; border: 2px solid #44475a; color: #f8f8f2;
             border-radius: 50px; font-size: 0.95rem; cursor: pointer; transition: 0.2s; text-align: center;
-            box-shadow: 0 4px 0 #111;
         }
-        .option-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #111; background: var(--accent-purple); }
+        .option-btn:active { background: var(--accent-purple); }
 
         .result-card {
             background: var(--card-bg);
@@ -51,11 +50,11 @@
             text-align: center; overflow: hidden;
             box-shadow: 0 0 30px rgba(189, 147, 249, 0.4);
         }
-        .result-img { width: 100%; height: 320px; object-fit: cover; border-bottom: 3px solid var(--accent-purple); margin-bottom: 20px; }
+        .result-img { width: 100%; height: 350px; object-fit: cover; border-bottom: 3px solid var(--accent-purple); margin-bottom: 20px; }
         .res-content { padding: 0 20px; }
         .res-type { font-size: 1.6rem; font-weight: bold; margin-bottom: 10px; color: #fff; text-shadow: 0 0 5px var(--accent-purple); }
         .res-catch { font-size: 1rem; color: var(--accent-pink); margin-bottom: 20px; font-weight: bold; }
-        .res-desc { font-size: 0.9rem; line-height: 1.8; text-align: left; color: #ddd; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 15px; border: 1px solid #444; }
+        .res-desc { font-size: 0.9rem; line-height: 1.8; text-align: left; color: #ddd; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 15px; }
         
         .hidden { display: none; }
     </style>
@@ -67,7 +66,7 @@
         <h1>THE ABYSS</h1>
         <p class="sub-title">〜可愛くて最強な裏ボス診断〜</p>
         <div style="text-align:center; margin-bottom: 40px;">
-            <span style="font-size: 4rem;">😈</span>
+            <span style="font-size: 4rem;">🔮</span>
         </div>
         <button class="option-btn" style="border-color: var(--accent-pink);" onclick="start()">診断をはじめる！</button>
     </div>
@@ -101,84 +100,4 @@
         { q: "Q3. 好きな食べ物はどっち？", opts: [{t:"甘くて可愛いお菓子", s:"A"}, {t:"刺激たっぷり激辛料理", s:"B"}, {t:"みんなで食べる豪華なもの", s:"C"}, {t:"毒が入ってそうな色の飲み物", s:"D"}] },
         { q: "Q4. 魔法が使えるなら？", opts: [{t:"時を止めて観察したい", s:"A"}, {t:"派手な爆発魔法！", s:"B"}, {t:"全員を従える支配魔法", s:"C"}, {t:"誰かの記憶を書き換える", s:"D"}] },
         { q: "Q5. 自分の性格をひとことで言うと？", opts: [{t:"おっとり、でも鋭い", s:"A"}, {t:"天才、でも変人", s:"B"}, {t:"頼れる、でも怖い", s:"C"}, {t:"親切、でも計算高い", s:"D"}] },
-        { q: "Q6. 敵に回したくないのは？", opts: [{t:"正体がわからない人", s:"A"}, {t:"何をするか読めない人", s:"B"}, {t:"人望がすごすぎる人", s:"C"}, {t:"弱みを握っている人", s:"D"}] },
-        { q: "Q7. 最後の戦い、あなたのセリフは？", opts: [{t:"「ずっと見てたよ」", s:"A"}, {t:"「あはは！壊しちゃえ！」", s:"B"}, {t:"「ボクに従いなさい」", s:"C"}, {t:"「すべて計画通りだよ」", s:"D"}] }
-    ];
-
-    const results = {
-        A: { 
-            title: "氷の微笑・観測者", 
-            catch: "静かなる支配者", 
-            desc: "あなたは、ニコニコしながらすべてを見通すタイプ。争いには参加しませんが、最後にはあなたが一番得をしています。冷静な瞳の裏で、次の一手を常に計算しています。", 
-            img: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=800&auto=format&fit=crop" 
-        },
-        B: { 
-            title: "混沌のパペット", 
-            catch: "予測不能な天才キャラ", 
-            desc: "常識なんて関係ない！あなたの自由すぎる行動が、結果的に世界をひっくり返してしまいます。無邪気な笑顔で破壊を楽しむ、最も危険なタイプです。", 
-            img: "https://images.unsplash.com/photo-1613376023733-0d743e414f3b?q=80&w=800&auto=format&fit=crop" 
-        },
-        C: { 
-            title: "光の帝王", 
-            catch: "太陽のような支配者", 
-            desc: "圧倒的なカリスマ性で人を惹きつけます。あなたの「お願い」は誰も断ることができません。光り輝く笑顔の裏に、絶対的な権力を持っています。", 
-            img: "https://images.unsplash.com/photo-1541562232579-512a21360020?q=80&w=800&auto=format&fit=crop" 
-        },
-        D: { 
-            title: "毒入りキャンディ", 
-            catch: "甘い罠を仕掛ける策士", 
-            desc: "可愛く振る舞いながら、相手の弱点を完璧に把握。あなたの手のひらから逃げることは不可能です。甘い香りに誘われたら最後、もう戻れません。", 
-            img: "https://images.unsplash.com/photo-1528319725582-ddc0b6aabc54?q=80&w=800&auto=format&fit=crop" 
-        },
-        Mix: { 
-            title: "深淵のプリンセス", 
-            catch: "すべての性質を持つ完全体", 
-            desc: "可愛さ、恐ろしさ、賢さ。すべてを兼ね備えたあなたは、正真正銘の『真の裏ボス』です。その深淵な魅力に、世界はひざまずくことでしょう。", 
-            img: "https://images.unsplash.com/photo-1571757767119-68b8dbed8c97?q=80&w=800&auto=format&fit=crop" 
-        }
-    };
-
-    let currentQ = 0;
-    let score = {A:0, B:0, C:0, D:0};
-
-    function start() {
-        document.getElementById('start-screen').classList.add('hidden');
-        document.getElementById('quiz-screen').classList.remove('hidden');
-        renderQuestion();
-    }
-
-    function renderQuestion() {
-        const q = questions[currentQ];
-        document.getElementById('q-text').innerText = q.q;
-        const optContainer = document.getElementById('options');
-        optContainer.innerHTML = '';
-        q.opts.forEach(o => {
-            const btn = document.createElement('button');
-            btn.className = 'option-btn';
-            btn.innerText = o.t;
-            btn.onclick = () => { score[o.s]++; next(); };
-            optContainer.appendChild(btn);
-        });
-        document.getElementById('bar').style.width = ((currentQ / questions.length) * 100) + '%';
-    }
-
-    function next() {
-        currentQ++;
-        if(currentQ < questions.length) { renderQuestion(); } 
-        else { showResult(); }
-    }
-
-    function showResult() {
-        document.getElementById('quiz-screen').classList.add('hidden');
-        document.getElementById('result-screen').classList.remove('hidden');
-        const maxScore = Math.max(...Object.values(score));
-        const winners = Object.keys(score).filter(k => score[k] === maxScore);
-        let res = winners.length > 1 ? results.Mix : results[winners[0]];
-        document.getElementById('res-type').innerText = "【" + res.title + "】";
-        document.getElementById('res-catch').innerText = res.catch;
-        document.getElementById('res-desc').innerText = res.desc;
-        document.getElementById('res-img').src = res.img;
-    }
-</script>
-</body>
-</html>
+        { q: "Q6. 敵に回したくないのは？", opts: [{t:"正体がわからない人", s:"A"}, {t:"何をするか読めない人", s:"B"}, {t:"人望がすごすぎる人
