@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>裏ボス診断 | THE ABYSS CUTIE</title>
+    <title>究極の裏ボス診断 | THE ABYSS</title>
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700&family=Noto+Sans+JP:wght@300;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #0f0a14;
             --card-bg: #1e1626;
-            --accent-pink: #ff79c6;
-            --accent-purple: #bd93f9;
             --text: #f8f8f2;
+            --accent-pink: #ff79c6; /* スタート画面のボタンやタイトルに */
         }
 
         body {
@@ -24,39 +23,36 @@
         }
 
         #app { width: 100%; max-width: 450px; padding: 20px; box-sizing: border-box; }
-
         .fade-in { animation: fadeIn 0.6s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        h1 { color: var(--accent-pink); text-align: center; font-size: 1.8rem; margin-bottom: 30px; }
+        h1 { color: var(--accent-pink); text-align: center; font-size: 1.8rem; margin-bottom: 20px; text-shadow: 0 0 10px rgba(255,121,198,0.5); }
+        .sub-title { text-align: center; font-size: 0.8rem; color: #bbb; margin-bottom: 30px; }
 
-        /* 質問エリア */
-        .question-box { background: var(--card-bg); padding: 30px; border-radius: 25px; border: 2px solid var(--accent-purple); text-align: center; }
+        .question-box { background: var(--card-bg); padding: 30px; border-radius: 25px; border: 2px solid #444; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .question-text { font-size: 1.1rem; font-weight: 700; margin-bottom: 25px; line-height: 1.6; color: #fff; }
 
-        /* ボタンのデザイン */
         .option-btn {
             display: block; width: 100%; padding: 15px; margin-bottom: 12px;
             background: #282a36; border: 2px solid #44475a; color: #f8f8f2;
             border-radius: 50px; font-size: 1rem; cursor: pointer; transition: 0.3s;
         }
-        .option-btn:hover { border-color: var(--accent-pink); background: #44475a; }
+        .option-btn:hover { border-color: var(--accent-pink); background: #44475a; transform: scale(1.02); }
 
         /* 結果カードのデザイン */
         .result-card {
             background: var(--card-bg);
-            border: 3px solid var(--accent-purple);
             border-radius: 25px; padding: 0 0 30px 0;
             text-align: center; overflow: hidden;
-            box-shadow: 0 0 20px rgba(189, 147, 249, 0.3);
+            box-shadow: 0 0 40px rgba(0,0,0,0.7);
+            border: 4px solid var(--theme-color); /* 各タイプの色がここに適用される */
         }
 
-        .result-img { width: 100%; height: 280px; object-fit: cover; border-bottom: 3px solid var(--accent-purple); margin-bottom: 20px; }
+        .result-img { width: 100%; height: 300px; object-fit: cover; border-bottom: 4px solid var(--theme-color); margin-bottom: 20px; }
         .res-content { padding: 0 20px; }
-        .res-label { font-size: 0.8rem; color: var(--accent-pink); font-weight: bold; margin-bottom: 10px; }
-        .res-type { font-size: 1.6rem; font-weight: bold; margin-bottom: 10px; color: #fff; }
-        .res-catch { font-size: 1rem; color: var(--accent-purple); margin-bottom: 20px; font-weight: bold; }
-        .res-desc { font-size: 0.9rem; line-height: 1.8; text-align: left; color: #ddd; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 15px; }
+        .res-type { font-size: 1.6rem; font-weight: bold; margin-bottom: 10px; color: var(--theme-color); text-shadow: 0 0 10px var(--theme-color); }
+        .res-catch { font-size: 1rem; color: #fff; margin-bottom: 20px; font-weight: bold; opacity: 0.9; }
+        .res-desc { font-size: 0.9rem; line-height: 1.8; text-align: left; color: #ddd; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); }
         
         .hidden { display: none; }
     </style>
@@ -66,8 +62,9 @@
 <div id="app">
     <div id="start-screen" class="fade-in">
         <h1>THE ABYSS</h1>
+        <p class="sub-title">〜あなたの深層に潜む「裏の顔」を診断〜</p>
         <div class="question-box">
-            <p class="question-text">あなたの「裏の顔」を暴きます。<br>心の準備はいいですか？</p>
+            <p class="question-text">全10問の質問で、あなたがもし「裏ボス」になったらどんな存在になるか診断します。<br>心の準備はいいですか？</p>
             <button class="option-btn" style="border-color: var(--accent-pink);" onclick="startQuiz()">診断をはじめる</button>
         </div>
     </div>
@@ -80,31 +77,118 @@
     </div>
 
     <div id="result-screen" class="hidden fade-in">
-        <div class="result-card">
+        <div id="res-card" class="result-card">
             <img id="res-img" src="" class="result-img">
             <div class="res-content">
-                <p class="res-label">💖 究極の裏ボス降臨</p>
                 <div id="res-type" class="res-type"></div>
                 <div id="res-catch" class="res-catch"></div>
                 <div id="res-desc" class="res-desc"></div>
             </div>
         </div>
-        <button class="option-btn" style="margin-top: 25px; border-color: var(--accent-purple);" onclick="location.reload()">もう一度診断する</button>
+        <button class="option-btn" style="margin-top: 25px; border-color: var(--accent-pink);" onclick="location.reload()">もう一度診断する</button>
     </div>
 </div>
 
 <script>
     const questions = [
-        { q: "魔法が使えるなら？", opts: [{t:"時を止める", s:"A"}, {t:"全てを爆発させる", s:"B"}, {t:"人の心を操る", s:"C"}, {t:"消える", s:"D"}] },
-        { q: "好きな色は？", opts: [{t:"深淵の黒", s:"A"}, {t:"鮮血の赤", s:"B"}, {t:"黄金の輝き", s:"C"}, {t:"猛毒の紫", s:"D"}] },
-        { q: "最後の戦いでのセリフは？", opts: [{t:"「ずっと見てたよ」", s:"A"}, {t:"「あはは！壊しちゃえ！」", s:"B"}, {t:"「ボクに従いなさい」", s:"C"}, {t:"「すべて計画通り」", s:"D"}] }
+        { 
+            q: "Q1. 争いごとが起きた時、あなたはどこにいる？", 
+            opts: [
+                {t: "遠くから静かに眺めている", s: "A"}, 
+                {t: "面白そうだと首を突っ込む", s: "B"}, 
+                {t: "仲裁して場を収める", s: "C"}, 
+                {t: "裏で誰を勝たせるか決めている", s: "D"}
+            ] 
+        },
+        { 
+            q: "Q2. 誰かに隠し事をしている時の気分は？", 
+            opts: [
+                {t: "何も感じない、日常の一部", s: "A"}, 
+                {t: "バレた時の反応が楽しみ", s: "B"}, 
+                {t: "相手を傷つけないか少し心配", s: "C"}, 
+                {t: "隠し事ではなく「戦略」だと思う", s: "D"}
+            ] 
+        },
+        { 
+            q: "Q3. 究極の魔法を一つだけ覚えるなら？", 
+            opts: [
+                {t: "世界のすべてを記録する魔法", s: "A"}, 
+                {t: "常識をデタラメにする魔法", s: "B"}, 
+                {t: "誰からも愛される魔法", s: "C"}, 
+                {t: "望む未来を確定させる魔法", s: "D"}
+            ] 
+        },
+        { 
+            q: "Q4. 自分の弱点を見せることはある？", 
+            opts: [
+                {t: "そもそも誰にも心を開かない", s: "A"}, 
+                {t: "ネタとして笑い飛ばす", s: "B"}, 
+                {t: "信頼させるための武器として使う", s: "C"}, 
+                {t: "弱点に見える「罠」を張る", s: "D"}
+            ] 
+        },
+        { 
+            q: "Q5. 勝利が決まった瞬間、何を思う？", 
+            opts: [
+                {t: "「予想通りの結末だ」", s: "A"}, 
+                {t: "「次はもっと面白い遊びをしよう」", s: "B"}, 
+                {t: "「みんなが幸せならそれでいい」", s: "C"}, 
+                {t: "「すべては盤上の出来事だ」", s: "D"}
+            ] 
+        },
+        { 
+            q: "Q6. あなたにとって「正義」とは何？", 
+            opts: [
+                {t: "ただの言葉、意味はない", s: "A"}, 
+                {t: "壊して遊ぶためのもの", s: "B"}, 
+                {t: "自分を輝かせるための看板", s: "C"}, 
+                {t: "秩序を保つための道具", s: "D"}
+            ] 
+        },
+        { 
+            q: "Q7. 完璧な計画に「予期せぬトラブル」が起きたら？", 
+            opts: [
+                {t: "黙って軌道修正する", s: "A"}, 
+                {t: "そのハプニングを全力で楽しむ", s: "B"}, 
+                {t: "周りに助けてもらって乗り切る", s: "C"}, 
+                {t: "それすらも想定内として利用する", s: "D"}
+            ] 
+        },
+        { 
+            q: "Q8. あなたが一番大切にしているものは？", 
+            opts: [
+                {t: "静寂と孤独", s: "A"}, 
+                {t: "退屈しない毎日", s: "B"}, 
+                {t: "自分を慕ってくれる人々", s: "C"}, 
+                {t: "完璧な勝利の記録", s: "D"}
+            ] 
+        },
+        { 
+            q: "Q9. 敵対する相手に最後にかける言葉は？", 
+            opts: [
+                {t: "「さようなら、もう会うこともないね」", s: "A"}, 
+                {t: "「君、最高に笑えたよ！」", s: "B"}, 
+                {t: "「許してあげる。だから私の下に来なさい」", s: "C"}, 
+                {t: "「チェックメイト。最初から決まっていたよ」", s: "D"}
+            ] 
+        },
+        { 
+            q: "Q10. もし世界を新しく作り直せるなら？", 
+            opts: [
+                {t: "誰も自分を知らない静かな世界", s: "A"}, 
+                {t: "毎日がパーティーのような騒がしい世界", s: "B"}, 
+                {t: "自分が一番愛される幸せな世界", s: "C"}, 
+                {t: "不合理なことが一切ない効率的な世界", s: "D"}
+            ] 
+        }
     ];
 
     const results = {
-        A: { type: "氷の微笑・観測者", catch: "静かなる支配者", desc: "ニコニコしながら全てを見通すタイプ。争いには参加せず、最後には一番得をしています。", img: "https://images.unsplash.com/photo-1578632738980-43314a5b4628?w=800&auto=format" },
-        B: { type: "混沌のパペット", catch: "予測不能な天才キャラ", desc: "常識なんて関係ない！自由すぎる行動が、結果的に世界をひっくり返してしまいます。", img: "https://images.unsplash.com/photo-1634157703702-3c124b455499?w=800&auto=format" },
-        C: { type: "深淵のロリポップ", catch: "可愛さの裏に、絶対の支配", desc: "見た目は最高にキュート！でも、あなたの正体は世界を裏から作り変える最強の支配者です。", img: "https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?w=800&auto=format" },
-        D: { type: "毒入りキャンディ", catch: "甘い罠を仕掛ける策士", desc: "可愛く振る舞いながら相手の弱点を完璧に把握。あなたの手のひらから逃げることは不可能です。", img: "https://images.unsplash.com/photo-1560972550-aba3456b5564?w=800&auto=format" }
+        A: { title: "静かなる裏ボス型", catch: "何もしてないようで、全部見てる人", desc: "冷静沈着。感情に流されず全体を俯瞰しています。物語の最後に「実はこの人が全部わかっていた」と明かされる、最も不気味で不可欠な存在です。", color: "#4cc9f0", img: "https://image.pollinations.ai/prompt/cute%20anime%20girl%20standing%20alone%20in%20a%20dark%20room,%20glowing%20eyes,%20observing,%20blue%20and%20purple%20glow,%20subtle%20menace,%20minimalist,%20chibi" },
+        B: { title: "クセ強・天才裏ボス型", catch: "変人扱いされがちだが、実は最強", desc: "発想が独特で、周囲からはズレていると思われがち。しかし、その思考は常人を超越しており、一番重要な局面で世界をひっくり返す力を持っています。", color: "#f72585", img: "https://image.pollinations.ai/prompt/cute%20anime%20girl%20with%20wild%20pink%20hair,%20mischievous%20grin,%20destroying%20things%20with%20chaos%20magic,%20explosion%20effects,%20bright%20and%20vibrant,%20chibi" },
+        C: { title: "人たらし裏ボス型", catch: "気づいたら中心にいる人", desc: "自然と空気を支配し、人に好かれるカリスマ。王やリーダーに見えて、実は裏側からすべてを掌握している、ある意味で最も恐ろしいタイプです。", color: "#ffbe0b", img: "https://image.pollinations.ai/prompt/cute%20anime%20girl%20with%20golden%20crown,%20charming%20smile,%20surrounded%20by%20adoring%20minions,%20radiant%20and%20kind%20expression,%20hidden%20power,%20chibi" },
+        D: { title: "黒幕・策士裏ボス型", catch: "選ばせてるようで、選ばせてない", desc: "一手先を読み、勝ち筋を作る天才。他人に選択肢を与えているようで、実はすでにあなたの盤面は完成しています。すべては計画通りです。", color: "#7209b7", img: "https://image.pollinations.ai/prompt/cute%20anime%20girl%20with%20cunning%20eyes,%20holding%20a%20chess%20piece,%20evil%20but%20charming%20smile,%20purple%20and%20black%20tones,%20strategic,%20chibi" },
+        Mix: { title: "深淵のプリンセス", catch: "すべての性質を持つ完全体", desc: "可愛さ、恐ろしさ、賢さ。すべてを兼ね備えたあなたは、正真正銘の『真の裏ボス』です。その深淵な魅力に、世界はひざまずくことでしょう。", color: "#ff79c6", img: "https://image.pollinations.ai/prompt/cute%20anime%20girl%20princess,%20dark%20fantasy%20theme,%20both%20sweet%20and%20menacing%20aura,%20glowing%20magic,%20mastermind,%20chibi" }
     };
 
     let currentQ = 0;
@@ -142,12 +226,35 @@
     function showResult() {
         document.getElementById('quiz-screen').classList.add('hidden');
         document.getElementById('result-screen').classList.remove('hidden');
-        const winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
-        const res = results[winner];
-        document.getElementById('res-type').innerText = "【" + res.type + "】";
-        document.getElementById('res-catch').innerText = "〜" + res.catch + "〜";
+        
+        let winner = '';
+        let maxScore = -1;
+        let tiedWinners = [];
+
+        // スコアが一番高いタイプを判定
+        for (const type in scores) {
+            if (scores[type] > maxScore) {
+                maxScore = scores[type];
+                winner = type;
+                tiedWinners = [type]; // 新しい最高スコアなのでリセット
+            } else if (scores[type] === maxScore) {
+                tiedWinners.push(type); // 同点の場合に追加
+            }
+        }
+
+        let res;
+        if (tiedWinners.length > 1) {
+            // 同点があった場合はMixタイプにする
+            res = results.Mix;
+        } else {
+            res = results[winner];
+        }
+        
+        document.getElementById('res-type').innerText = "【" + res.title + "】";
+        document.getElementById('res-catch').innerText = res.catch;
         document.getElementById('res-desc').innerText = res.desc;
         document.getElementById('res-img').src = res.img;
+        document.getElementById('res-card').style.setProperty('--theme-color', res.color);
     }
 </script>
 </body>
