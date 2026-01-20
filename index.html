@@ -9,10 +9,10 @@
         :root {
             --bg: #050505;
             --card-bg: #121212;
-            --accent-a: #4cc9f0; /* 静かなる：青 */
-            --accent-b: #f72585; /* クセ強：ピンク/紫 */
-            --accent-c: #ffbe0b; /* 人たらし：ゴールド */
-            --accent-d: #7209b7; /* 黒幕：濃紫 */
+            --accent-a: #4cc9f0;
+            --accent-b: #f72585;
+            --accent-c: #ffbe0b;
+            --accent-d: #7209b7;
             --text: #e0e0e0;
         }
 
@@ -25,21 +25,17 @@
             min-height: 100vh; overflow-x: hidden;
         }
 
-        #app { width: 100%; max-width: 450px; padding: 25px; box-sizing: border-box; }
+        #app { width: 100%; max-width: 450px; padding: 20px; box-sizing: border-box; }
 
-        /* フェード演出 */
-        .fade-in { animation: fadeIn 0.6s forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.8s forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ヘッダー・タイトル */
         h1 { font-family: 'Cinzel', serif; font-size: 1.8rem; color: #fff; text-align: center; letter-spacing: 3px; margin-bottom: 5px; }
         .sub-title { font-size: 0.8rem; text-align: center; color: #888; margin-bottom: 30px; }
 
-        /* 進行状況 */
         .progress-container { width: 100%; height: 2px; background: #222; margin-bottom: 40px; }
         .progress-bar { height: 100%; background: #fff; width: 0%; transition: 0.4s; box-shadow: 0 0 10px #fff; }
 
-        /* 質問カード */
         .question-text { font-size: 1.1rem; font-weight: 700; margin-bottom: 30px; line-height: 1.6; min-height: 3em; }
         .option-btn {
             display: block; width: 100%; padding: 18px; margin-bottom: 12px;
@@ -47,25 +43,27 @@
             border-radius: 8px; font-size: 0.95rem; text-align: left; cursor: pointer;
             transition: all 0.2s;
         }
-        .option-btn:active { background: #222; transform: scale(0.98); border-color: #666; }
+        .option-btn:active { background: #222; transform: scale(0.98); }
 
-        /* 結果画面（スクショ用カード） */
+        /* 結果画面のデザイン強化 */
         .result-card {
             background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
-            border: 1px solid #333; border-radius: 15px; padding: 30px 20px;
-            text-align: center; position: relative; overflow: hidden;
+            border: 1px solid #333; border-radius: 15px; padding: 0 0 30px 0;
+            text-align: center; overflow: hidden;
         }
-        .result-card::before {
-            content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+        .result-img {
+            width: 100%; height: 200px; object-fit: cover;
+            border-bottom: 1px solid #333; margin-bottom: 20px;
+            filter: grayscale(0.3) contrast(1.2);
         }
+        .res-content { padding: 0 20px; }
         .res-label { font-size: 0.75rem; color: #aaa; letter-spacing: 2px; margin-bottom: 10px; }
-        .res-type { font-size: 1.6rem; font-weight: bold; margin-bottom: 20px; color: #fff; }
-        .res-catch { font-size: 1.1rem; color: var(--accent-a); font-weight: bold; margin-bottom: 25px; padding: 10px; border-top: 1px solid #333; border-bottom: 1px solid #333; }
-        .res-desc { font-size: 0.9rem; line-height: 1.8; text-align: left; color: #bbb; margin-bottom: 20px; }
+        .res-type { font-size: 1.6rem; font-weight: bold; margin-bottom: 15px; color: #fff; }
+        .res-catch { font-size: 1.1rem; font-weight: bold; margin-bottom: 25px; padding: 12px; border-top: 1px solid #333; border-bottom: 1px solid #333; }
+        .res-desc { font-size: 0.9rem; line-height: 1.9; text-align: left; color: #bbb; margin-bottom: 25px; white-space: pre-wrap; }
         
         .hidden { display: none; }
-        .btn-retry { background: none; border: 1px solid #555; color: #888; padding: 10px 20px; border-radius: 20px; margin-top: 30px; font-size: 0.8rem; cursor: pointer; }
+        .btn-retry { background: none; border: 1px solid #555; color: #888; padding: 10px 20px; border-radius: 20px; margin-top: 30px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -75,8 +73,8 @@
         <h1>THE ABYSS</h1>
         <p class="sub-title">― あなたの裏ボスな性質 診断 ―</p>
         <div style="text-align: center; margin-top: 50px;">
-            <p style="font-size: 0.9rem; line-height: 2; color: #bbb;">表では普通。<br>でも物語の最後に名前が出るのは<br>こういう人だったりします。</p>
-            <button class="option-btn" style="text-align: center; margin-top: 40px; border-color: #666;" onclick="start()">診断をはじめる</button>
+            <p style="font-size: 0.9rem; line-height: 2; color: #bbb;">表では普通。でも物語の最後に<br>名前が出るのは、あなたかもしれない。</p>
+            <button class="option-btn" style="text-align: center; margin-top: 40px; border-color: #666;" onclick="start()">深淵を覗く</button>
         </div>
     </div>
 
@@ -90,11 +88,14 @@
 
     <div id="result-screen" class="hidden fade-in">
         <div class="result-card" id="res-card">
-            <p class="res-label">😈 裏ボス診断結果</p>
-            <div class="res-type" id="res-type"></div>
-            <div class="res-catch" id="res-catch"></div>
-            <div class="res-desc" id="res-desc"></div>
-            <p style="font-size: 0.7rem; color: #555; margin-top: 20px;">※このタイプにはまだ表に出していない側面があります。</p>
+            <img src="" id="res-img" class="result-img" alt="Result Image">
+            <div class="res-content">
+                <p class="res-label">😈 裏ボス診断結果</p>
+                <div class="res-type" id="res-type"></div>
+                <div class="res-catch" id="res-catch"></div>
+                <div class="res-desc" id="res-desc"></div>
+                <p style="font-size: 0.7rem; color: #555;">※このタイプにはまだ表に出していない側面があります。</p>
+            </div>
         </div>
         <div style="text-align: center;">
             <button class="btn-retry" onclick="location.reload()">もう一度診断する</button>
@@ -114,10 +115,41 @@
     ];
 
     const results = {
-        A: { title: "静かなる裏ボス型", catch: "何もしてないようで、全部見てる人", desc: "冷静沈着。感情に流されず全体を俯瞰しています。物語の最後に「実はこの人が全部わかっていた」と明かされる、最も不気味で不可欠な存在です。", color: "#4cc9f0" },
-        B: { title: "クセ強・天才裏ボス型", catch: "変人扱いされがちだが、実は最強", desc: "発想が独特で、周囲からはズレていると思われがち。しかし、その思考は常人を超越しており、一番重要な局面で世界をひっくり返す力を持っています。", color: "#f72585" },
-        C: { title: "人たらし裏ボス型", catch: "気づいたら中心にいる人", desc: "自然と空気を支配し、人に好かれるカリスマ。王やリーダーに見えて、実は裏側からすべてを掌握している、ある意味で最も恐ろしいタイプです。", color: "#ffbe0b" },
-        D: { title: "黒幕・策士裏ボス型", catch: "選ばせてるようで、選ばせてない", desc: "一手先を読み、勝ち筋を作る天才。他人に選択肢を与えているようで、実はすでにあなたの盤面は完成しています。すべては計画通りです。", color: "#7209b7" }
+        A: { 
+            title: "静かなる裏ボス型", 
+            catch: "何もしてないようで、全部見てる人", 
+            desc: "あなたは圧倒的な「静寂」の支配者です。感情の起伏を最小限に抑え、常に戦況を俯瞰しています。周囲からは「大人しい人」と思われがちですが、実際には情報のパズルを脳内で完成させているだけ。物語の最後、主人公が勝利を確信した瞬間に『それは私の計算通りだ』と微笑む、冷徹な観測者こそがあなたの本性です。", 
+            color: "#4cc9f0",
+            img: "https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=800&q=80"
+        },
+        B: { 
+            title: "クセ強・天才裏ボス型", 
+            catch: "変人扱いされがちだが、実は最強", 
+            desc: "あなたの思考は、既存の枠組みを軽々と飛び越えます。常識という名の鎖が効かないあなたは、味方であれば頼もしいが、敵に回すと最も予測不能な恐怖となります。他人には理解できない『美学』や『狂気』を持っており、物語を予定調和で終わらせないための「異物」として、世界を書き換える力を持っています。", 
+            color: "#f72585",
+            img: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=800&q=80"
+        },
+        C: { 
+            title: "人たらし裏ボス型", 
+            catch: "気づいたら中心にいる人", 
+            desc: "あなたは光の中にいながら、影を操る術を知っています。その人望とカリスマ性は、自ら望まずとも周囲をあなたの意のままに動かしてしまうでしょう。誰もがあなたを『理想のリーダー』と疑いませんが、その優しさこそが最大の武器。気づいた時には、周囲の人間すべてがあなたの手のひらの上で踊らされている、そんな天性の支配者です。", 
+            color: "#ffbe0b",
+            img: "https://images.unsplash.com/photo-1533282960533-51328aa49826?auto=format&fit=crop&w=800&q=80"
+        },
+        D: { 
+            title: "黒幕・策士裏ボス型", 
+            catch: "選ばせてるようで、選ばせてない", 
+            desc: "あなたの前では、すべての選択肢はまやかしに過ぎません。人間心理をチェスの駒のように読み解き、相手に「自分で選んだ」と錯覚させながら、あらかじめ用意したゴールへ誘導する天才です。勝利への執着は人一倍強く、勝つための準備（仕込み）を何年も前から行える忍耐力も持っています。盤面が完成した時、あなたは静かにチェックメイトを告げるでしょう。", 
+            color: "#7209b7",
+            img: "https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&w=800&q=80"
+        },
+        Mix: {
+            title: "深淵の複合型裏ボス",
+            catch: "表の本性と、裏の性質のズレ",
+            desc: "あなたは一つのカテゴリーに収まる器ではありません。冷静沈着でありながらどこか狂気を孕んでいたり、人当たりが良いのに冷徹な計算をしていたりと、複数の性質が複雑に絡み合っています。その「矛盾」こそが、底知れない裏ボスとしての色気に繋がっています。あなた自身の正体は、あなた自身にもまだ見えていないのかもしれません。",
+            color: "#ffffff",
+            img: "https://images.unsplash.com/photo-1514539079130-25950c84af65?auto=format&fit=crop&w=800&q=80"
+        }
     };
 
     let currentQ = 0;
@@ -160,26 +192,15 @@
         document.getElementById('quiz-screen').classList.add('hidden');
         document.getElementById('result-screen').classList.remove('hidden');
 
-        // 集計
         const maxScore = Math.max(...Object.values(score));
         const winners = Object.keys(score).filter(k => score[k] === maxScore);
         
-        let finalType;
-        if(winners.length > 1) {
-            // 複合型
-            finalType = {
-                title: "複合型裏ボス",
-                catch: "表の本性と、裏の性質のズレ",
-                desc: "あなたは単一タイプではありません。複数の性質が混ざり合い、正体がつかめない「真の裏ボス感」を醸し出しています。",
-                color: "#ffffff"
-            };
-        } else {
-            finalType = results[winners[0]];
-        }
+        let finalType = winners.length > 1 ? results.Mix : results[winners[0]];
 
         document.getElementById('res-type').innerText = "【" + finalType.title + "】";
-        document.getElementById('res-catch').innerText = "👉 " + finalType.catch;
+        document.getElementById('res-catch').innerText = finalType.catch;
         document.getElementById('res-desc').innerText = finalType.desc;
+        document.getElementById('res-img').src = finalType.img;
         document.getElementById('res-catch').style.color = finalType.color;
         document.getElementById('res-card').style.borderColor = finalType.color;
     }
