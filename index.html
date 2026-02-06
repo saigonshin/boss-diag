@@ -18,6 +18,22 @@
         .btn:hover { border-color: var(--accent); }
         .res-desc { font-size: 0.95rem; line-height: 1.7; text-align: left; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 15px; white-space: pre-wrap; margin-top: 15px; }
         .hidden { display: none; }
+
+        /* 星座質問のボタンを調整するためのスタイル */
+        #options.compact-options .option-btn {
+            font-size: 0.85rem; /* フォントを少し小さく */
+            padding: 10px 8px; /* パディングを調整 */
+            margin-bottom: 6px; /* マージンも少し詰める */
+        }
+        /* ボタンを2列にしたい場合は以下を追加 */
+        #options.two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 2列にする */
+            gap: 8px; /* ボタン間の隙間 */
+        }
+        #options.two-columns .option-btn {
+            width: auto; /* グリッドに合わせる */
+        }
     </style>
 </head>
 <body>
@@ -32,7 +48,7 @@
     <div id="quiz" class="hidden fade-in">
         <div class="card" style="padding:20px; cursor:default;">
             <p id="q-text" style="font-weight:bold;"></p>
-            <div id="opts"></div>
+            <div id="options"></div>
         </div>
     </div>
     <div id="result" class="hidden fade-in">
@@ -50,37 +66,88 @@
 
 <script>
     const questions = [
-        { q: "まずは血液型教えてーな？", opts: [{t: "A型", s: "A"}, {t: "B型", s: "B"}, {t: "O型", s: "C"}, {t: "AB型", s: "D"}] },
-        { q: "星座はどれや？", opts: [{t: "火（牡羊・獅子・射手）", s: "B"}, {t: "土（牡牛・乙女・山羊）", s: "A"}, {t: "風（双子・天秤・水瓶）", s: "D"}, {t: "水（蟹・蠍・魚）", s: "C"}] },
-        { q: "喧嘩が始まったらどないする？", opts: [{t: "黙って観察", s: "A"}, {t: "面白そうやし混ざる", s: "B"}, {t: "ニコニコして仲裁", s: "C"}, {t: "裏で糸を引く", s: "D"}] },
-        { q: "魔法ひとつ使えるなら？", opts: [{t: "全知全能の知識", s: "A"}, {t: "ド派手な破壊兵器", s: "B"}, {t: "人を操る魅了", s: "C"}, {t: "時間操作", s: "D"}] }
+        { q: "Q1. まずは血液型を教えてーな？", opts: [{t: "A型", s: "A"}, {t: "B型", s: "B"}, {t: "O型", s: "C"}, {t: "AB型", s: "D"}] },
+        { q: "Q2. 自分の星座を選んでや！", opts: [
+            {t: "おひつじ座", s: "B"}, {t: "おうし座", s: "A"}, {t: "ふたご座", s: "D"}, {t: "かに座", s: "C"},
+            {t: "しし座", s: "B"}, {t: "おとめ座", s: "A"}, {t: "てんびん座", s: "D"}, {t: "さそり座", s: "C"},
+            {t: "いて座", s: "B"}, {t: "やぎ座", s: "A"}, {t: "みずがめ座", s: "D"}, {t: "うお座", s: "C"}
+        ], className: "two-columns" }, // ここでCSSクラスを指定
+        { q: "Q3. 喧嘩が始まったらどないする？", opts: [{t: "離れてじーっと見てる", s: "A"}, {t: "おもしろそうやん！って混ざる", s: "B"}, {t: "まぁまぁ、落ち着きやって止める", s: "C"}, {t: "どっち勝たせるか裏で操る", s: "D"}] },
+        { q: "Q4. 隠し事してる時の気分は？", opts: [{t: "特になんも思わん", s: "A"}, {t: "バレた時の顔が見たいわぁ", s: "B"}, {t: "ちょっと心苦しいなぁ", s: "C"}, {t: "勝つための戦略やろ", s: "D"}] },
+        { q: "Q5. 魔法ひとつ使えるなら？", opts: [{t: "世界の記憶を覗き見たい", s: "A"}, {t: "常識をメチャクチャにしたい", s: "B"}, {t: "みんなに好かれまくりたい", s: "C"}, {t: "未来を自分の思い通りにしたい", s: "D"}] },
+        { q: "Q6. 弱点、他人に見せる？", opts: [{t: "絶対見せへんわ", s: "A"}, {t: "笑いのネタにする", s: "B"}, {t: "仲良くなる武器にする", s: "C"}, {t: "弱点に見せかけた罠を張る", s: "D"}] },
+        { q: "Q7. 計画通りにいかなかったら？", opts: [{t: "黙って修正する", s: "A"}, {t: "ハプニングを楽しむ", s: "B"}, {t: "周りに助けてもらう", s: "C"}, {t: "その状況さえも利用する", s: "D"}] },
+        { q: "Q8. 休みの日は何してることが多い？", opts: [{t: "一人で読書やゲーム", s: "A"}, {t: "刺激を求めて外出", s: "B"}, {t: "友達とお喋り", s: "C"}, {t: "人間観察や情報収集", s: "D"}] },
+        { q: "Q9. 正直、世界をどないしたい？", opts: [{t: "静かに暮らせればええ", s: "A"}, {t: "もっとハチャメチャにしたい", s: "B"}, {t: "愛で満たしたい", s: "C"}, {t: "自分の理想通りに作り替えたい", s: "D"}] },
+        { q: "Q10. 勝った時の決め台詞は？", opts: [{t: "「想定内やな」", s: "A"}, {t: "「あーおもろかった！」", s: "B"}, {t: "「みんな、ウチの下に来る？」", s: "C"}, {t: "「はい、詰みやね」", s: "D"}] }
     ];
 
-   const resData = {
-        A: { t: "インテリ眼鏡の冷徹執行官", d: "自分、頭良すぎて逆に怖いわ！お茶すすりながら「全部、計算通りやで」って涼しい顔で言うてるタイプやろ。感情に流されへんから、敵に回すと一番理詰めでボコボコにされる、最強のインテリやな。" },
-        B: { t: "爆破大好き！ガトリング少女", d: "自分、テンション高すぎやろ！「ルール？そんなん壊すためにあるんやろ？」って笑いながら、デカい銃をぶっ放すタイプやな。自分が楽しければ世界がどないなってもええっていう、無茶苦茶やけど皆に好かれる爆弾娘やで！" },
-        C: { t: "毒薬と微笑みのマッドサイエンティスト", d: "自分、顔は笑ってるけど目が全然笑ってへんで！優しく話しかけながら、裏でこっそり怪しい薬を作って「どんな反応するか楽しみやなぁ」とか言うてそうやわ。本気で怒らせたら一番えげつない、変態的な天才やな！" },
-        D: { t: "影を操る虚無の支配者", d: "自分、ミステリアスすぎて存在が「闇」そのものやん！言葉少なめに「…消えろ」って一言で相手を沈める正統派。深い孤独を抱えてる感じが、逆にかっこよすぎてファンが仰山つくタイプやで。" },
-        E: { t: "ぬいぐるみと残酷なプリンセス", d: "見た目は可愛らしいお嬢様やのに、中身は驚くほど残酷やな！「あの子、邪魔やから消して？」ってぬいぐるみに命令してそうやわ。その可愛さと恐ろしさのギャップに、一生下僕にされる奴が後を絶たへんで！" },
-        F: { t: "墜ちた聖職者の光と闇", d: "自分、一番タチ悪いタイプやな！正義の顔して「救ってあげます」って言いながら、絶望に突き落とすんやろ？背中の羽が白か黒か分からんくらいオーラが複雑や。自分に助けられたら最後、そこは地獄の入り口やわ。" },
-        Mix: { t: "全てを嘲笑う伝説の神", d: "自分、もう次元が違うわ！男とか女とか関係ない、存在そのものが「災害」レベル。全ての裏ボスが束になっても勝てへん真のリーダーや。自分が出てきたら物語は強制終了。自分、最強すぎて人生退屈してへんか？" }
-    
+    const resData = {
+        A: { t: "インテリ眼鏡の冷徹執行官", d: "自分、頭良すぎて逆に怖いわ！お茶すすりながら「全部、計算通りやで」って涼しい顔で言うてるタイプやろ。感情に流されへんから、敵に回すと一番理詰めでボコボコにされる、最強のインテリやな。", c: "#4cc9f0", i: "https://r.jina.ai/i/e76f920f0a14" },
+        B: { t: "爆破大好き！ガトリング少女", d: "自分、テンション高すぎやろ！「ルール？そんなん壊すためにあるんやろ？」って笑いながら、デカい銃をぶっ放すタイプやな。自分が楽しければ世界がどないなってもええっていう、無茶苦茶やけど皆に好かれる爆弾娘やで！", c: "#f72585", i: "https://r.jina.ai/i/f81833675397" },
+        C: { t: "毒薬と微笑みのマッドサイエンティスト", d: "自分、顔は笑ってるけど目が全然笑ってへんで！優しく話しかけながら、裏でこっそり怪しい薬を作って「どんな反応するか楽しみやなぁ」とか言うてそうやわ。本気で怒らせたら一番えげつない、変態的な天才やな！", c: "#ffbe0b", i: "https://r.jina.ai/i/f58183397135" },
+        D: { t: "影を操る虚無の支配者", d: "自分、ミステリアスすぎて存在が「闇」そのものやん！言葉少なめに「…消えろ」って一言で相手を沈める正統派。深い孤独を抱えてる感じが、逆にかっこよすぎてファンが仰山つくタイプやで。", c: "#7209b7", i: "https://r.jina.ai/i/f560972550b1" },
+        E: { t: "ぬいぐるみと残酷なプリンセス", d: "見た目は可愛らしいお嬢様やのに、中身は驚くほど残酷やな！「あの子、邪魔やから消して？」ってぬいぐるみに命令してそうやわ。その可愛さと恐ろしさのギャップに、一生下僕にされる奴が後を絶たへんで！", c: "#ff0054", i: "https://r.jina.ai/i/f63415770370" },
+        F: { t: "墜ちた聖職者の光と闇", d: "自分、一番タチ悪いタイプやな！正義の顔して「救ってあげます」って言いながら、絶望に突き落とすんやろ？背中の羽が白か黒か分からんくらいオーラが複雑や。自分に助けられたら最後、そこは地獄の入り口やわ。", c: "#480ca8", i: "https://r.jina.ai/i/f57863273898" },
+        Mix: { t: "全てを嘲笑う伝説の神", d: "自分、もう次元が違うわ！男とか女とか関係ない、存在そのものが「災害」レベル。全ての裏ボスが束になっても勝てへん真のリーダーや。自分が出てきたら物語は強制終了。自分、最強すぎて人生退屈してへんか？", c: "#ff79c6", i: "https://r.jina.ai/i/f51488828697" }
+    };
 
-    let cur = 0, scores = {A:0, B:0, C:0, D:0};
-    function start() { document.getElementById('start').classList.add('hidden'); document.getElementById('quiz').classList.remove('hidden'); show(); }
-    function show() {
-        const q = questions[cur]; document.getElementById('q-text').innerText = q.q;
-        const div = document.getElementById('opts'); div.innerHTML = '';
-        q.opts.forEach(o => { const b = document.createElement('button'); b.className = 'btn'; b.innerText = o.t; b.onclick = () => { scores[o.s]++; next(); }; div.appendChild(b); });
+    let currentQ = 0;
+    let scores = {A:0, B:0, C:0, D:0};
+
+    function start() {
+        document.getElementById('start').classList.add('hidden');
+        document.getElementById('quiz').classList.remove('hidden');
+        showQuestion();
     }
-    function next() { cur++; if(cur < questions.length) show(); else result(); }
-    function result() {
-        document.getElementById('quiz').classList.add('hidden'); document.getElementById('result').classList.remove('hidden');
-        let win = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
-        let res = (scores[win] === 1) ? resData.Mix : resData[win];
-        if(win === 'A' && Math.random() > 0.5) res = resData.F; // 遊び心で分岐
-        if(win === 'B' && Math.random() > 0.5) res = resData.E;
 
+    function showQuestion() {
+        const q = questions[currentQ];
+        document.getElementById('q-text').innerText = q.q;
+        const optDiv = document.getElementById('options');
+        optDiv.innerHTML = ''; // 以前の選択肢をクリア
+
+        // 質問ごとにCSSクラスを切り替える
+        optDiv.className = ''; // まずクラスをリセット
+        if (q.className) {
+            optDiv.classList.add(q.className);
+            optDiv.classList.add("compact-options"); // 全体的な調整も適用
+        } else {
+            optDiv.classList.remove("compact-options");
+        }
+
+        q.opts.forEach(o => {
+            const btn = document.createElement('button');
+            btn.className = 'btn option-btn'; // option-btnを追加
+            btn.innerText = o.t;
+            btn.onclick = () => { scores[o.s]++; next(); };
+            optDiv.appendChild(btn);
+        });
+    }
+
+    function next() {
+        currentQ++;
+        if(currentQ < questions.length) { showQuestion(); } else { result(); }
+    }
+
+    function result() {
+        document.getElementById('quiz').classList.add('hidden');
+        document.getElementById('result').classList.remove('hidden');
+
+        let winnerKey = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+        const maxScore = scores[winnerKey];
+        const isMix = Object.values(scores).filter(s => s === maxScore).length >= 2; // 同点が2つ以上ならMix
+
+        let res;
+        if(isMix || (maxScore <= 2 && !isMix)) { // スコアが低い場合もMixになりやすくする遊び
+            res = resData.Mix;
+        } else {
+            // A, B, C, Dの基本4種に加えて、特定条件でE, Fを出す遊び心を追加
+            if(winnerKey === "A" && scores.A >= 6 && Math.random() > 0.4) res = resData.F; // Aが多いと墜ちた聖職者(男)
+            else if(winnerKey === "B" && scores.B >= 6 && Math.random() > 0.4) res = resData.E; // Bが多いと残酷プリンセス(女)
+            else res = resData[winnerKey];
+        }
+        
         document.getElementById('res-type').innerText = "【" + res.t + "】";
         document.getElementById('res-desc').innerText = res.d;
         document.getElementById('res-img').src = res.i;
